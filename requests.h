@@ -11,8 +11,9 @@ const std::size_t RESPONSE_SIZE {300};
  * The response is stored in the response array.
  * On success, 1 is returned, otherwise 0 is returned.
  */
-int send_apdu(const SCARDHANDLE &card, const std::vector<BYTE> &apdu,
+bool send_apdu(const SCARDHANDLE &card, const std::vector<BYTE> &apdu,
 		std::vector<BYTE> &response);
 
+bool read_nis(const SCARDHANDLE &card, std::vector<BYTE> &response);
 }
 #endif

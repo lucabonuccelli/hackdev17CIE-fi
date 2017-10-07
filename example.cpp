@@ -11,8 +11,6 @@
 
 #define _TCHAR char
 
-//int read_binary(const SCARDHANDLE &card, BYTE sfi, BYTE length);
-
 int main(int argc, _TCHAR* argv[])
 {
 	for (auto &x : {1, 2, 3, 4, 5, 6}) {
@@ -54,7 +52,6 @@ int main(int argc, _TCHAR* argv[])
 			std::cout << "Connessione al lettore fallita\n";
 			return 0;
 		}
-
 		std::vector<BYTE> response(Requests::RESPONSE_SIZE);
 		DWORD response_len {Requests::RESPONSE_SIZE};
 		// prepara la prima APDU: Seleziona il DF dell'applicazione IAS
@@ -66,7 +63,6 @@ int main(int argc, _TCHAR* argv[])
 			0xA0, 0x00, 0x00, 0x00, 0x30, 0x80, 0x00, 0x00,
 			0x00, 0x09, 0x81, 0x60, 0x01 // AID
 		};
-
 		// invia la prima APDU
 		if (!Requests::send_apdu(Card, selectIAS, response)) {
 			std::cerr << "Errore nella selezione del DF_IAS\n";
@@ -85,21 +81,11 @@ int main(int argc, _TCHAR* argv[])
 			std::cerr << "Errore nella selezione del DF_CIE\n";
 			return EXIT_FAILURE;
 		} 
-
-		BYTE p1 = argc > 1 ? (BYTE) std::stoi(argv[1]) : 0x81;
 		// prepara la terza APDU: Lettura del file dell'ID_Servizi selezionato contestualmente tramite Short Identifier (SFI = 1)
-		std::vector<BYTE> readNIS = {0x00, // CLA
-			0xb0, // INS = READ BINARY
-			p1,   // P1 = Read by SFI & SFI = 1 //to read public key
-			0x00, // P2 = Offset = 0
-			0x0c  // LE = length of NIS
-		};
-	// invia la terza APDU
-		if (!Requests::send_apdu(Card, readNIS, response)) {
+		if (!Requests::read_nis(Card, response)) {
 			std::cerr << "Errore nella lettura dell'Id_Servizi\n";
-			//return EXIT_FAILURE;
+			return EXIT_FAILURE;
 		} 
-
 		std::ofstream out_file {"certificate.txt"};
 		out_file << response.data() << "\n";
 		std::cout << "Certificate written to file" << '\n';
@@ -110,27 +96,3 @@ int main(int argc, _TCHAR* argv[])
 	}
 	return 0;
 }
-
-/*
-int read_binary(const SCARDHANDLE &card, const DWORD length,
-		BYTE sfi, DWORD &response_len)
-{
-	std::vector<BYTE> response(RESPONSE_SIZE);
-	std::vector<BYTE> tmp_response {};
-	BYTE tmp_len {length > 0xff ? 0xff : length};
-	std::vector<BYTE> apdu {0x00, 0xb0, sfi, 0x00, tmp_len};
-
-
-	while (apdu[4] > 0) {
-		if (!send_apdu(card, apdu, tmp_response, response_len)) {
-			std::cerr << "Errore nella lettura della risposta\n";
-			return 0;
-		}
-		response.insert(response.end(), tmp_response.begin(),
-				tmp_response.end());
-		apdu[2] += response_len;
-		apdu[4] -= response_len;
-	}
-	return 0;
-}
-*/
