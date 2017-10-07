@@ -13,7 +13,9 @@
 
 #define _TCHAR char
 
-std::array<BYTE, 300> read_from_card(const SCARDHANDLE &card,
+const std::size_t RESPONSE_SIZE {300};
+
+std::array<BYTE, RESPONSE_SIZE> read_from_card(const SCARDHANDLE &card,
 		const std::vector<BYTE> &apdu);
 
 int main(int argc, _TCHAR* argv[])
@@ -57,7 +59,6 @@ int main(int argc, _TCHAR* argv[])
 		std::cout << "Connessione al lettore fallita\n";
 		return 0;
 	}
-
 	// prepara la prima APDU: Seleziona il DF dell'applicazione IAS
 	std::vector<BYTE> selectIAS {0x00, // CLA
 		0xa4, // INS = SELECT FILE
@@ -106,7 +107,7 @@ int main(int argc, _TCHAR* argv[])
 	return 0;
 }
 
-std::array<BYTE, 300> read_from_card(const SCARDHANDLE &card, const std::vector<BYTE> &apdu)
+std::array<BYTE, RESPONSE_SIZE> read_from_card(const SCARDHANDLE &card, const std::vector<BYTE> &apdu)
 {
 	const BYTE *apdu_rawdata {apdu.data()};
 	const size_t apdu_size {apdu.capacity()};
