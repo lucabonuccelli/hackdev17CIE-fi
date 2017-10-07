@@ -15,4 +15,4 @@ requests.o:
 	$(C++) $(FLAGS) -c requests.cpp
 
 clean:
-	rm test
+	rm -f test *.o
