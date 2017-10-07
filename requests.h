@@ -8,12 +8,18 @@ const std::size_t RESPONSE_SIZE {300};
 /*
  * Sends the specified apdu, which must be encapsulated in a BYTE vector,
  * to the specified card handle.
- * The response is stored in the response array.
- * On success, 1 is returned, otherwise 0 is returned.
+ * The response is stored in the response vector.
+ * In case of a successful reply, true is returned, false otherwise.
  */
 bool send_apdu(const SCARDHANDLE &card, const std::vector<BYTE> &apdu,
 		std::vector<BYTE> &response);
 
+/*
+ * Sends a request to read NIS from the specified SCARDHANDLE.
+ * Response is stored in the response vector.
+ *
+ * In case of a successful reply, true is returned, false otherwise.
+ */
 bool read_nis(const SCARDHANDLE &card, std::vector<BYTE> &response);
 }
 #endif
