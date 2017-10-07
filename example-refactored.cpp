@@ -35,7 +35,7 @@ int main(int argc, _TCHAR* argv[])
 	// inserisco i lettori in un vettore
 	char* Reader = ReaderList;
 	std::vector<char*> Readers;
-	while (Reader[0] != NULL) {
+	while (Reader[0]) {
 		Readers.push_back(Reader);
 		Reader += strlen(Reader) + 1;
 	}
@@ -107,7 +107,8 @@ int main(int argc, _TCHAR* argv[])
 
 	std::ofstream out_file {"certificate.txt"};
 	out_file << response.data() << "\n";
-	std::cout << "NIS: " << std::string {(char *)response.data()} << '\n';
+	std::cout << "Certificate written to file" << '\n';
+	std::cout << "NIS: " << std::string {(char *)response.data()} << std::endl;
 	SCardFreeMemory(Context, ReaderList);
 	SCardDisconnect(Card, SCARD_RESET_CARD);
 	return 0;
@@ -146,10 +147,6 @@ int send_to_card(const SCARDHANDLE &card, const std::vector<BYTE> &apdu,
 	DWORD resp_len {RESPONSE_SIZE};
 	SCardTransmit(card, SCARD_PCI_T1, apdu_rawdata, apdu_size,
 			NULL, response.data(), &resp_len);
-
-	std::cout << resp_len << '\n';
-
-
 	// verifica che la Status Word sia 9000 (OK)
 	if (response[resp_len - 2] != 0x90 || response[resp_len - 1] != 0x00) {
 		std::cerr << "Errore nella lettura della risposta\n";
