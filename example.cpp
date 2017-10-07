@@ -13,7 +13,7 @@
 
 int main(int argc, _TCHAR* argv[])
 {
-	for (auto &x : {1, 2, 3, 4, 5, 6}) {
+	for (int x = 0; x < 6; ++x) {
 		// stibilisco la connessione al sottosistema di gestione delle smart card
 		SCARDCONTEXT Context;
 		SCardEstablishContext(SCARD_SCOPE_SYSTEM, NULL, NULL, &Context);
