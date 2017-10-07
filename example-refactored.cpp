@@ -1,8 +1,3 @@
-
-// EsempioPCSC.cpp : Defines the entry point for the console application.
-
-
-//#include "stdafx.h"
 #include <winscard.h>
 #include <vector>
 #include <fstream>
@@ -15,7 +10,13 @@
 
 const std::size_t RESPONSE_SIZE {300};
 
-std::array<BYTE, RESPONSE_SIZE> read_from_card(const SCARDHANDLE &card,
+/*
+ * Sends the specified apdu, which must be encapsulated in a BYTE vector,
+ * to the specified card handle.
+ * Returns an array containing the response returned from the card.
+ * In case of error, an empty array is returned.
+ */
+std::array<BYTE, RESPONSE_SIZE> send_to_card(const SCARDHANDLE &card,
 		const std::vector<BYTE> &apdu);
 
 int main(int argc, _TCHAR* argv[])
@@ -70,7 +71,7 @@ int main(int argc, _TCHAR* argv[])
 	};
 
 	// invia la prima APDU
-	if (read_from_card(Card, selectIAS).size() == 0) {
+	if (send_to_card(Card, selectIAS).size() == 0) {
 		std::cerr << "Errore nella selezione del DF_IAS\n";
 		return EXIT_FAILURE;
 	} 
@@ -83,7 +84,7 @@ int main(int argc, _TCHAR* argv[])
 		0xA0, 0x00, 0x00, 0x00, 0x00, 0x39 // AID
 	};
 	// invia la seconda APDU
-	if (read_from_card(Card, selectCIE).size() == 0) {
+	if (send_to_card(Card, selectCIE).size() == 0) {
 		std::cerr << "Errore nella selezione del DF_CIE\n";
 		return EXIT_FAILURE;
 	} 
@@ -96,7 +97,7 @@ int main(int argc, _TCHAR* argv[])
 	};
 	// invia la terza APDU
 	std::array<BYTE, 300> response;
-	if ((response = read_from_card(Card, selectCIE)).size() == 0) {
+	if ((response = send_to_card(Card, selectCIE)).size() == 0) {
 		std::cerr << "Errore nella lettura dell'Id_Servizi\n";
 	} 
 
@@ -107,7 +108,7 @@ int main(int argc, _TCHAR* argv[])
 	return 0;
 }
 
-std::array<BYTE, RESPONSE_SIZE> read_from_card(const SCARDHANDLE &card, const std::vector<BYTE> &apdu)
+std::array<BYTE, RESPONSE_SIZE> send_to_card(const SCARDHANDLE &card, const std::vector<BYTE> &apdu)
 {
 	const BYTE *apdu_rawdata {apdu.data()};
 	const size_t apdu_size {apdu.capacity()};
