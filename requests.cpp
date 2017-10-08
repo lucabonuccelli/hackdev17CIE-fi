@@ -25,7 +25,7 @@ bool Requests::read_nis(const SCARDHANDLE &card, std::vector<BYTE> &response)
 		0x00, // P2 = Offset = 0
 		0x0c  // LE = length of NIS
 	};
-	// invia la terza APDU
+	// invia l'APDU
 	if (!Requests::send_apdu(card, readNIS, response)) {
 		std::cerr << "Errore nella lettura dell'Id_Servizi\n";
 		return false;
