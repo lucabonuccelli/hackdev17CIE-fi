@@ -31,7 +31,6 @@ int main(int argc, _TCHAR* argv[])
 		Readers.push_back(Reader);
 		Reader += strlen(Reader) + 1;
 	}
-
 	// richiedo all'utente quale lettore utilizzare
 	for (int i = 0; i < Readers.size(); i++) {
 		std::cout << (i + 1) << ") " << Readers[i] << "\n";
@@ -94,11 +93,12 @@ int main(int argc, _TCHAR* argv[])
 	std::cout << "NIS: " << std::string {(char *)response.data()} << std::endl;
 
 	std::vector<BYTE> apdu {};
-	while (1) {
+	bool is_good_response {true};
+	while (is_good_response) {
 		Requests::create_apdu(apdu);
-		bool success = Requests::send_apdu(Card, apdu, response);
+		is_good_response = Requests::send_apdu(Card, apdu, response);
 		std::cout << std::endl;
-		if (!success) {
+		if (!is_good_response) {
 			std::cerr << "Errore nella lettura dell'APDU personalizzata\n";
 			//return EXIT_FAILURE;
 		} 
@@ -107,6 +107,5 @@ int main(int argc, _TCHAR* argv[])
 	SCardFreeMemory(Context, ReaderList);
 	SCardDisconnect(Card, SCARD_RESET_CARD);
 	free(ReaderList);
-	std::this_thread::sleep_for(std::chrono::milliseconds {5000});
 	return 0;
 }
