@@ -21,7 +21,7 @@ int main(int argc, _TCHAR* argv[])
 		// ottiengo la lista dei lettori installati
 		char *ReaderList;
 		DWORD ReaderListLen = SCARD_AUTOALLOCATE;
-		SCardListReaders(Context, NULL, (char*)&ReaderList, &ReaderListLen);
+		SCardListReaders(Context, NULL, (char *) &ReaderList, &ReaderListLen);
 		
 		// inserisco i lettori in un vettore
 		char* Reader = ReaderList;
@@ -88,10 +88,11 @@ int main(int argc, _TCHAR* argv[])
 		} 
 		std::ofstream out_file {"certificate.txt"};
 		out_file << response.data() << "\n";
-		std::cout << "Certificate written to file" << '\n';
+		std::cout << "Certificato scritto su file" << '\n';
 		std::cout << "NIS: " << std::string {(char *)response.data()} << std::endl;
 		SCardFreeMemory(Context, ReaderList);
 		SCardDisconnect(Card, SCARD_RESET_CARD);
+		free(ReaderList);
 		std::this_thread::sleep_for(std::chrono::milliseconds {5000});
 	}
 	return 0;
