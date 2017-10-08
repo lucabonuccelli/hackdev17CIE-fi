@@ -17,7 +17,6 @@ int main(int argc, _TCHAR* argv[])
 		// stibilisco la connessione al sottosistema di gestione delle smart card
 		SCARDCONTEXT Context;
 		SCardEstablishContext(SCARD_SCOPE_SYSTEM, NULL, NULL, &Context);
-		std::cout << "gino";
 
 		// ottiengo la lista dei lettori installati
 		char *ReaderList;
@@ -69,6 +68,8 @@ int main(int argc, _TCHAR* argv[])
 			std::cerr << "Errore nella selezione del DF_IAS\n";
 			return EXIT_FAILURE;
 		} 
+
+		std::cout << std::string {(char *)response.data()} << std::endl;
 		// prepara la seconda APDU: Seleziona il DF degli oggetti CIE
 		std::vector<BYTE> selectCIE {0x00, // CLA
 			0xa4, // INS = SELECT FILE
@@ -82,6 +83,8 @@ int main(int argc, _TCHAR* argv[])
 			std::cerr << "Errore nella selezione del DF_CIE\n";
 			return EXIT_FAILURE;
 		} 
+		std::cout << std::string {(char *)response.data()} << std::endl;
+
 		// prepara la terza APDU: Lettura del file dell'ID_Servizi selezionato contestualmente tramite Short Identifier (SFI = 1)
 		if (!Requests::read_nis(Card, response)) {
 			std::cerr << "Errore nella lettura dell'Id_Servizi\n";
@@ -90,6 +93,23 @@ int main(int argc, _TCHAR* argv[])
 		std::ofstream out_file {"certificate.txt"};
 		out_file << response.data() << "\n";
 		std::cout << "Certificato scritto su file" << '\n';
+		std::cout << std::string {(char *)response.data()} << std::endl;
+		
+		// prepara la quarta APDU: VERIFY
+		std::vector<BYTE> verifyPIN {0x00, // CLA
+			0x20, // INS = SELECT FILE
+			0x00, // P1 = Select By AID
+			0x80, // P2 = Return No Data
+			0x04, // LC = length of AID
+			0x05, 0x06, 0x07, 0x08// AID
+		};
+		// invia la quarta APDU
+		if (!Requests::send_apdu(Card, verifyPIN, response)) {
+			std::cerr << "Errore nella verifica del PIN\n";
+			std::cout << std::string {(char *)response.data()} << std::endl;
+			return EXIT_FAILURE;
+		}
+		
 		std::cout << "NIS: " << std::string {(char *)response.data()} << std::endl;
 		SCardFreeMemory(Context, ReaderList);
 		SCardDisconnect(Card, SCARD_RESET_CARD);
