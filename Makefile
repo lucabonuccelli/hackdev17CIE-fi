@@ -1,6 +1,6 @@
 C++ = g++
 BINDIR = ./bin/
-FLAGS = -I /usr/include/PCSC -lpcsclite
+FLAGS = -std=c++11 -I /usr/include/PCSC -lpcsclite
 
 all: objs test-nis
 objs: example.o requests.o
