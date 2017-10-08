@@ -1,7 +1,6 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-#include <array>
 #include <string>
 #include <cstring>
 #include <thread>
@@ -17,7 +16,6 @@ int main(int argc, _TCHAR* argv[])
 		// stibilisco la connessione al sottosistema di gestione delle smart card
 		SCARDCONTEXT Context;
 		SCardEstablishContext(SCARD_SCOPE_SYSTEM, NULL, NULL, &Context);
-		std::cout << "gino";
 
 		// ottiengo la lista dei lettori installati
 		char *ReaderList;

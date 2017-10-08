@@ -1,1 +1,1 @@
-g++ -I /usr/include/PCSC $(pkg-config libpcsclite --libs) example.cpp
+g++ -I /usr/include/PCSC $(pkg-config libpcsclite --libs) example-backup.cpp
