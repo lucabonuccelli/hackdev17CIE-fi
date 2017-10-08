@@ -6,6 +6,7 @@
 #include <cstring>
 #include <thread>
 #include <ios>
+#include <cassert>
 #include <winscard.h>
 
 #include "requests.h"
@@ -35,7 +36,7 @@ int main(int argc, _TCHAR* argv[])
 	for (int i = 0; i < Readers.size(); i++) {
 		std::cout << (i + 1) << ") " << Readers[i] << "\n";
 	}
-	std::cout << "Selezionare il lettore su cui è appoggiata la CIE\n";
+	std::cout << "Selezionare il lettore su cui è appoggiata la CIE" << '\n';
 
 	int ReaderNum = -1;
 	std::cin >> ReaderNum;
@@ -53,40 +54,13 @@ int main(int argc, _TCHAR* argv[])
 		return 0;
 	}
 	std::vector<BYTE> response(Requests::RESPONSE_SIZE);
-	DWORD response_len {Requests::RESPONSE_SIZE};
+	//DWORD response_len {Requests::RESPONSE_SIZE};
 	// prepara la prima APDU: Seleziona il DF dell'applicazione IAS
-	std::vector<BYTE> selectIAS {0x00, // CLA
-		0xa4, // INS = SELECT FILE
-		0x04, // P1 = Select By AID
-		0x0c, // P2 = Return No Data
-		0x0d, // LC = length of AID
-		0xA0, 0x00, 0x00, 0x00, 0x30, 0x80, 0x00, 0x00,
-		0x00, 0x09, 0x81, 0x60, 0x01 // AID
-	};
-	// invia la prima APDU
-	if (!Requests::send_apdu(Card, selectIAS, response)) {
-		std::cerr << "Errore nella selezione del DF_IAS\n";
-		return EXIT_FAILURE;
-	} 
+	assert(Requests::select_df_ias(Card, response));
 	// prepara la seconda APDU: Seleziona il DF degli oggetti CIE
-	std::vector<BYTE> selectCIE {0x00, // CLA
-		0xa4, // INS = SELECT FILE
-		0x04, // P1 = Select By AID
-		0x0c, // P2 = Return No Data
-		0x06, // LC = length of AID
-		0xA0, 0x00, 0x00, 0x00, 0x00, 0x39 // AID
-	};
-	// invia la seconda APDU
-	if (!Requests::send_apdu(Card, selectCIE, response)) {
-		std::cerr << "Errore nella selezione del DF_CIE\n";
-		return EXIT_FAILURE;
-	} 
+	assert(Requests::select_cie_df(Card, response));
 	// prepara la terza APDU: Lettura del file dell'ID_Servizi selezionato contestualmente tramite Short Identifier (SFI = 1)
-	if (!Requests::read_nis(Card, response)) {
-		std::cerr << "Errore nella lettura dell'Id_Servizi\n";
-		return EXIT_FAILURE;
-	} 
-
+	assert(Requests::read_nis(Card, response));
 	std::ofstream out_file {"certificate.txt"};
 	out_file << response.data() << "\n";
 	std::cout << "Certificato scritto su file" << '\n';
@@ -98,10 +72,8 @@ int main(int argc, _TCHAR* argv[])
 		Requests::create_apdu(apdu);
 		is_good_response = Requests::send_apdu(Card, apdu, response);
 		std::cout << std::endl;
-		if (!is_good_response) {
+		if (!is_good_response)
 			std::cerr << "Errore nella lettura dell'APDU personalizzata\n";
-			//return EXIT_FAILURE;
-		} 
 		std::cout << "output message:" << std::string {(char *)response.data()} << std::endl;
 	}
 	SCardFreeMemory(Context, ReaderList);
