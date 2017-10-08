@@ -141,7 +141,7 @@
         if(ok)
         {
             NSLog(@">>>>> select IAS ok");
-            [self selectIASOnSmartCard:sc withComplete:^(BOOL ok) {
+            [self selectCIEOnSmartCard:sc withComplete:^(BOOL ok) {
                 if(ok)
                 {
                     NSLog(@">>>>> select DF_CIE ok");
