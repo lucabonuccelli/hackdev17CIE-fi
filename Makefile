@@ -1,11 +1,12 @@
 C++ = g++
+BINDIR = ./bin/
 FLAGS = -I /usr/include/PCSC -lpcsclite
 
-all: objs test
+all: objs test-nis
 objs: example.o requests.o
 	
-test:
-	$(C++) $(FLAGS) -o test example.o requests.o
+test-nis:
+	$(C++) $(FLAGS) -o $(BINDIR)test-nis example.o requests.o
 	rm *.o
 
 example.o:
