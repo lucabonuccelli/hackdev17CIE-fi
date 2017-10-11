@@ -6,6 +6,6 @@
 			<accessrule kind="accessible" pattern="javax/smartcardio/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/bcprov-jdk15on-158.jar"/>
+	<classpathentry kind="lib" path="/hackdev17CIE-fi/CIELib4J/lib/bcprov-jdk15on-158.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
