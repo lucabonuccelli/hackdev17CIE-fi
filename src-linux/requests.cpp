@@ -57,6 +57,7 @@ bool Requests::select_cie_df(const SCARDHANDLE &card, std::vector<BYTE> &respons
 	} 
 	return true;
 }
+
 bool Requests::read_nis(const SCARDHANDLE &card, std::vector<BYTE> &response)
 {
 	std::vector<BYTE> readNIS = {0x00, // CLA
