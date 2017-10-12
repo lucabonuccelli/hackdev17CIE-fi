@@ -1,8 +1,4 @@
-// EsempioPCSC.cpp : Defines the entry point for the console application.
-
-
-//#include "stdafx.h"
-#include <winscard.h>
+#include <PCSC/winscard.h>
 #include <vector>
 #include <iostream>
 #include <string>
@@ -12,7 +8,6 @@
 
 int main(int argc, _TCHAR* argv[])
 {
-
 	// stibilisco la connessione al sottosistema di gestione delle smart card
 	SCARDCONTEXT Context;
 	SCardEstablishContext(SCARD_SCOPE_SYSTEM, NULL, NULL, &Context);
@@ -23,7 +18,7 @@ int main(int argc, _TCHAR* argv[])
 	SCardListReaders(Context, NULL, (char*)&ReaderList, &ReaderListLen);
 	
 	// inserisco i lettori in un vettore
-	char* Reader = ReaderList;
+	char* Reader{ReaderList};
 	std::vector<char*> Readers;
 	while (Reader[0] != NULL) {
 		Readers.push_back(Reader);

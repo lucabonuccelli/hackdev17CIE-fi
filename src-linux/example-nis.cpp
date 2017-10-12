@@ -4,7 +4,7 @@
 #include <string>
 #include <cstring>
 #include <thread>
-#include <winscard.h>
+#include <PCSC/winscard.h>
 
 #include "requests.h"
 
@@ -23,7 +23,7 @@ int main(int argc, _TCHAR* argv[])
 		SCardListReaders(Context, NULL, (char *) &ReaderList, &ReaderListLen);
 		
 		// inserisco i lettori in un vettore
-		char* Reader = ReaderList;
+		char* Reader{ReaderList};
 		std::vector<char*> Readers;
 		while (Reader[0]) {
 			Readers.push_back(Reader);
@@ -32,11 +32,11 @@ int main(int argc, _TCHAR* argv[])
 
 		// richiedo all'utente quale lettore utilizzare
 		for (int i = 0; i < Readers.size(); i++) {
-			std::cout << (i + 1) << ") " << Readers[i] << "\n";
+			std::cout << (i + 1) << ") " << Readers[i] << '\n';
 		}
 		std::cout << "Selezionare il lettore su cui è appoggiata la CIE\n";
 
-		int ReaderNum = -1;
+		int ReaderNum{-1};
 		std::cin >> ReaderNum;
 		if (ReaderNum < 1 || ReaderNum>Readers.size()) {
 			std::cout << "Lettore inesistente\n";
@@ -54,7 +54,7 @@ int main(int argc, _TCHAR* argv[])
 		std::vector<BYTE> response(Requests::RESPONSE_SIZE);
 		DWORD response_len {Requests::RESPONSE_SIZE};
 		// prepara la prima APDU: Seleziona il DF dell'applicazione IAS
-		std::vector<BYTE> selectIAS {0x00, // CLA
+		std::vector<BYTE> selectIAS{0x00, // CLA
 			0xa4, // INS = SELECT FILE
 			0x04, // P1 = Select By AID
 			0x0c, // P2 = Return No Data
@@ -68,7 +68,7 @@ int main(int argc, _TCHAR* argv[])
 			return EXIT_FAILURE;
 		} 
 		// prepara la seconda APDU: Seleziona il DF degli oggetti CIE
-		std::vector<BYTE> selectCIE {0x00, // CLA
+		std::vector<BYTE> selectCIE{0x00, // CLA
 			0xa4, // INS = SELECT FILE
 			0x04, // P1 = Select By AID
 			0x0c, // P2 = Return No Data
@@ -85,7 +85,7 @@ int main(int argc, _TCHAR* argv[])
 			std::cerr << "Errore nella lettura dell'Id_Servizi\n";
 			return EXIT_FAILURE;
 		} 
-		std::ofstream out_file {"certificate.txt"};
+		std::ofstream out_file{"certificate.txt"};
 		out_file << response.data() << "\n";
 		std::cout << "Certificato scritto su file" << '\n';
 		std::cout << "NIS: " << std::string {(char *)response.data()} << std::endl;

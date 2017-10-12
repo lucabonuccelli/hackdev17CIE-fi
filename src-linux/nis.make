@@ -1,11 +1,12 @@
 C++ = g++
 BINDIR = ./bin/
-FLAGS = -std=c++11 -g -I /usr/include/PCSC -lpcsclite
+FLAGS = -std=c++11 -g -I/usr/include/PCSC/ -lpcsclite
 
 all: objs test-nis
 objs: example-nis.o requests.o
 	
 test-nis:
+	mkdir -p $(BINDIR)
 	$(C++) $(FLAGS) -o $(BINDIR)test-nis example-nis.o requests.o
 	rm *.o
 
@@ -16,4 +17,4 @@ requests.o:
 	$(C++) $(FLAGS) -c requests.cpp
 
 clean:
-	rm -f test *.o
+	rm -f $(BINDIR) *.o
